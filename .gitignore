@@ -129,4 +129,6 @@ dmypy.json
 .pyre/
 
 # Datasets
+data/processed/
 data/raw/
+credentials.py
