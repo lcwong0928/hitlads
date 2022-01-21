@@ -1,4 +1,3 @@
-"""Setup file for pytest."""
 from setuptools import setup
 import src
 
@@ -8,3 +7,4 @@ setup(name=src.__name__,
       test_suites='tests',
       python_requires='==3.7',
       )
+
