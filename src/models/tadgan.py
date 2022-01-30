@@ -9,6 +9,7 @@ import tensorflow.keras.backend as K
 
 from src.configuration.constants import MODEL_DATA_DIRECTORY
 from src.models.transformer import Encoder
+from tqdm import tqdm
 
 
 def _wasserstein_loss(y_true, y_hat):
@@ -88,7 +89,7 @@ class TadGAN:
 
         indices = np.arange(x_train.shape[0])
 
-        for epoch in range(len(self.epoch_loss) + 1, self.epochs + 1):
+        for epoch in tqdm(range(len(self.epoch_loss) + 1, self.epochs + 1)):
             np.random.shuffle(indices)
             X_ = x_train[indices]
             y_ = y_train[indices]
@@ -242,8 +243,8 @@ class TadGAN:
 
         return self.critic_x_model, self.critic_z_model, self.encoder_generator_model
 
-    def save(self, dataset, signal):
-        output_directory = os.path.join(MODEL_DATA_DIRECTORY, dataset, signal, self.model_name)
+    def save(self, source: str, dataset: str, signal: str):
+        output_directory = os.path.join(MODEL_DATA_DIRECTORY, source, dataset, signal, self.model_name)
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
 
@@ -258,8 +259,8 @@ class TadGAN:
             json.dump(self.input_parameters, f)
 
     @classmethod
-    def load(cls, dataset: str, signal: str):
-        model_directory = os.path.join(MODEL_DATA_DIRECTORY, dataset, signal, cls.model_name)
+    def load(cls, source: str, dataset: str, signal: str):
+        model_directory = os.path.join(MODEL_DATA_DIRECTORY, source, dataset, signal, cls.model_name)
         with open(os.path.join(model_directory, 'input_parameters.json'), 'rb') as f:
             input_parameters = json.load(f)
         model = cls(**input_parameters)
