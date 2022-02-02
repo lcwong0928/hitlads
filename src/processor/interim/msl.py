@@ -18,16 +18,15 @@ class MSLProcessor:
         X = self.anomaly_dataset.train.data
 
         # 1. Create an equi-spaced time series by aggregating values over fixed specified interval
-        # params = {
-        #     "time_column": "index",
-        #     "interval": 1,
-        #     "method": "mean"
-        # }
-        # primitive = load_primitive('mlprimitives.custom.timeseries_preprocessing.time_segments_aggregate',
-        #                            arguments=params)
-        # self.primitives.append(primitive)
-        # X, index = primitive.produce(X=X)
-        index = X.pop('index')
+        params = {
+            "time_column": "index",
+            "interval": 1,
+            "method": "mean"
+        }
+        primitive = load_primitive('mlprimitives.custom.timeseries_preprocessing.time_segments_aggregate',
+                                   arguments=params)
+        self.primitives.append(primitive)
+        X, index = primitive.produce(X=X)
 
         # 2. Imputation transformer for filling missing values.
         params = {
@@ -83,11 +82,11 @@ class MSLProcessor:
 
     def transform(self):
         X = self.anomaly_dataset.test.data
-        index = X.pop('index')
-        X = self.primitives[0].produce(X=X)
+        X, index = self.primitives[0].produce(X=X)
         X = self.primitives[1].produce(X=X)
-        X, _, index, _ = self.primitives[2].produce(X=X, index=index)
-        y = self.primitives[3].produce(X=X)
+        X = self.primitives[2].produce(X=X)
+        X, _, index, _ = self.primitives[3].produce(X=X, index=index)
+        y = self.primitives[4].produce(X=X)
 
         labels = (np.sum(X[:, :, -1], axis=1) > 50).astype(int)
         X = X[:, :, :-1]
