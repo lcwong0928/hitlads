@@ -17,8 +17,6 @@ class NASAProcessor:
         for idx, row in anomalies_df.iterrows():
             dataset = row['spacecraft']
             signal = row['chan_id']
-            anomalies = pd.DataFrame(eval(row['anomaly_sequences']), columns=['start', 'end'])
-
             filepath = os.path.join(RAW_DATA_DIRECTORY, 'NASA/{}/{}.npy')
 
             X_train = pd.DataFrame(np.load(filepath.format('train', signal))).reset_index()
@@ -27,6 +25,12 @@ class NASAProcessor:
             X_test = pd.DataFrame(np.load(filepath.format('test', signal))).reset_index()
             X_test['index'] += X_train['index'].iloc[-1] + 1
             X_test.columns = [str(col) for col in X_test.columns]
+
+            anomalies = pd.DataFrame(eval(row['anomaly_sequences']), columns=['start', 'end'])
+            anomalies['start'] += X_train['index'].iloc[-1] + 1
+            anomalies['end'] += X_train['index'].iloc[-1] + 1
+            X_train['labels'] = cls.create_index_labels(X_train['index'], anomalies)
+            X_test['labels'] = cls.create_index_labels(X_test['index'], anomalies)
 
             AnomalyDataset(**{
                 'source': cls.source,
@@ -43,3 +47,17 @@ class NASAProcessor:
                 }),
                 'anomalies': anomalies
             }).save(out_directory)
+
+    @classmethod
+    def create_index_labels(cls, index: pd.DataFrame, anomalies: pd.DataFrame) -> list:
+        labels = []
+
+        for i in index:
+            label = 0
+            for start, end in zip(anomalies.start, anomalies.end):
+                if start <= i <= end:
+                    label = 1
+                    break
+            labels.append(label)
+
+        return labels
