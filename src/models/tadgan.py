@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
 
-from src.configuration.constants import MODEL_DATA_DIRECTORY
+from src.configuration.constants import MODELS_DIRECTORY
 from src.models.transformer import Encoder
 from tqdm import tqdm
 
@@ -244,7 +244,7 @@ class TadGAN:
         return self.critic_x_model, self.critic_z_model, self.encoder_generator_model
 
     def save(self, source: str, dataset: str, signal: str):
-        output_directory = os.path.join(MODEL_DATA_DIRECTORY, source, dataset, signal, self.model_name)
+        output_directory = os.path.join(MODELS_DIRECTORY, source, dataset, signal, self.model_name)
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
 
@@ -260,7 +260,7 @@ class TadGAN:
 
     @classmethod
     def load(cls, source: str, dataset: str, signal: str):
-        model_directory = os.path.join(MODEL_DATA_DIRECTORY, source, dataset, signal, cls.model_name)
+        model_directory = os.path.join(MODELS_DIRECTORY, source, dataset, signal, cls.model_name)
         with open(os.path.join(model_directory, 'input_parameters.json'), 'rb') as f:
             input_parameters = json.load(f)
         model = cls(**input_parameters)

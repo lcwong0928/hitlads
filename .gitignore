@@ -132,3 +132,4 @@ dmypy.json
 data/
 credentials.py
 models/
+reports/

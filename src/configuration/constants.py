@@ -5,7 +5,8 @@ RAW = 'raw'
 PROCESSED = 'processed'
 INTERIM = 'interim'
 LOGS = 'logs'
-MODEL = 'model'
+MODELS = 'models'
+REPORTS = 'reports'
 
 # Quick access to directories.
 CONFIGURATION_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -16,4 +17,5 @@ RAW_DATA_DIRECTORY = os.path.join(ROOT_DIRECTORY, DATA, RAW)
 PROCESSED_DATA_DIRECTORY = os.path.join(ROOT_DIRECTORY, DATA, PROCESSED)
 INTERIM_DATA_DIRECTORY = os.path.join(ROOT_DIRECTORY, DATA, INTERIM)
 LOGS_DATA_DIRECTORY = os.path.join(ROOT_DIRECTORY, DATA, LOGS)
-MODEL_DATA_DIRECTORY = os.path.join(ROOT_DIRECTORY, DATA, MODEL)
+MODELS_DIRECTORY = os.path.join(ROOT_DIRECTORY, MODELS)
+REPORTS_DIRECTORY = os.path.join(ROOT_DIRECTORY, REPORTS)
