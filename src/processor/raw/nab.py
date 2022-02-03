@@ -2,6 +2,7 @@ import json
 import os
 
 import pandas as pd
+from tqdm import tqdm
 
 from src.configuration.constants import RAW_DATA_DIRECTORY, INTERIM_DATA_DIRECTORY
 from src.processor.dataset import AnomalyDataset, Dataset
@@ -18,17 +19,17 @@ class NABProcessor(RawProcessor):
         with open(anomalies_directory, 'rb') as f:
             anomalies_json = json.load(f)
 
-        for key, value in anomalies_json.items():
+        for key, value in tqdm(anomalies_json.items()):
             dataset, filename = key.split('/')
             signal = filename.split('.')[0]
             anomalies = pd.DataFrame(value, columns=['start', 'end'])
-            anomalies['start'] = pd.to_datetime(anomalies['start']).astype(int)
-            anomalies['end'] = pd.to_datetime(anomalies['end']).astype(int)
+            anomalies['start'] = pd.to_datetime(anomalies['start']).values.astype(int)
+            anomalies['end'] = pd.to_datetime(anomalies['end']).values.astype(int)
 
             filepath = os.path.join(data_directory, dataset, filename)
             df = pd.read_csv(filepath)
             df = df.rename(columns={'timestamp': 'index'})
-            df['index'] = pd.to_datetime(df['index']).astype(int)
+            df['index'] = pd.to_datetime(df['index']).values.astype(int)
             df['labels'] = cls.create_index_labels(df['index'], anomalies)
 
             AnomalyDataset(**{
